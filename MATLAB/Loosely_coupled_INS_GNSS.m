@@ -257,17 +257,20 @@ for epoch = 2:no_epochs
     meas_omega_ib_b = meas_omega_ib_b - est_IMU_bias(4:6);
     
     % Update estimated navigation solution
+    %predict
     [est_r_eb_e,est_v_eb_e,est_C_b_e] = Nav_equations_ECEF(tor_i,...
         old_est_r_eb_e,old_est_v_eb_e,old_est_C_b_e,meas_f_ib_b,...
         meas_omega_ib_b);
 
     % Determine whether to update GNSS simulation and run Kalman filter
+    % 决定是否使用滤波值
     if (time - time_last_GNSS) >= GNSS_config.epoch_interval
         GNSS_epoch = GNSS_epoch + 1;
         tor_s = time - time_last_GNSS;  % KF time interval
         time_last_GNSS = time;
    
         % Determine satellite positions and velocities
+        %计算卫星位置和速度
         [sat_r_es_e,sat_v_es_e] = Satellite_positions_and_velocities(time,...
             GNSS_config);
 
@@ -277,10 +280,12 @@ for epoch = 2:no_epochs
             true_v_eb_e,GNSS_biases,GNSS_config);
 
         % Determine GNSS position solution
+        % 计算GNSS定位位置
         [GNSS_r_eb_e,GNSS_v_eb_e,est_clock] = GNSS_LS_position_velocity(...
             GNSS_measurements,no_GNSS_meas,GNSS_r_eb_e,GNSS_v_eb_e);
 
         % Run Integration Kalman filter
+        % 松组合在这里
         [est_C_b_e,est_v_eb_e,est_r_eb_e,est_IMU_bias,P_matrix] =...
             LC_KF_Epoch(GNSS_r_eb_e,GNSS_v_eb_e,tor_s,est_C_b_e,...
             est_v_eb_e,est_r_eb_e,est_IMU_bias,P_matrix,meas_f_ib_b,...

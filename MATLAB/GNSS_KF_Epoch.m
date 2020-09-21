@@ -102,7 +102,7 @@ for j = 1:no_meas
     range_rate = u_as_e_T(j,1:3) * (C_e_I * (GNSS_measurements(j,6:8)' +...
         Omega_ie * GNSS_measurements(j,3:5)') - (x_est_propagated(4:6) +...
         Omega_ie * x_est_propagated(1:3)));        
-    pred_meas(j,2) = range_rate + x_est_propagated(8);
+    pred_meas(j,2) = range_rate + (8);
 
 end % for j
         
